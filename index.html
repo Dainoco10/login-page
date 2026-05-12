@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>login</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+
+<canvas id="scene"></canvas>
+
+<div class="sing login-box">
+    <h1>Secure Login</h1>
+  <div class="field input-box">
+    <input type="text" placeholder="Username" />
+    <ion-icon name="person-outline"></ion-icon>
+  </div>
+  <div class="field input-box">
+    <input type="password" placeholder="Password" />
+    <ion-icon name="lock-closed-outline"></ion-icon>
+  </div>
+    <button>INICIAR SECCION</button>
+    <div class="links">
+      <label class="remember">
+        <span class="box">
+          <input type="checkbox" />
+          <ion-icon name="checkmark-outline"></ion-icon>
+        </span>
+        <span>Recordarme</span>
+      </label>
+      <span class="link">¿Olvidaste tu contraseña?</span>
+    </div>
+</div>
+
+<script>
+const canvas = document.getElementById("scene");
+const ctx = canvas.getContext("2d");
+
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+
+window.addEventListener("resize", () => {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+  createRain();
+});
+
+// ===== LLUVIA =====
+let rain = [];
+
+function createRain() {
+  rain = [];
+
+  for(let i = 0; i < 700; i++){
+    rain.push({
+      x: Math.random() * w,
+      y: Math.random() * h,
+      len: Math.random() * 25 + 10,
+      speed: Math.random() * 8 + 4,
+      opacity: Math.random() * 0.5 + 0.2
+    });
+  }
+}
+
+createRain();
+
+// ===== OLAS =====
+let waveOffset = 0;
+
+function drawOcean() {
+  const gradient = ctx.createLinearGradient(0, h * 0.45, 0, h);
+
+  gradient.addColorStop(0, "#0b3d5c");
+  gradient.addColorStop(1, "#02111f");
+
+  ctx.fillStyle = gradient;
+
+  ctx.beginPath();
+  ctx.moveTo(0, h);
+
+  for(let x = 0; x <= w; x++) {
+    const y =
+      h * 0.65 +
+      Math.sin((x * 0.01) + waveOffset) * 18 +
+      Math.sin((x * 0.02) + waveOffset * 1.5) * 8;
+
+    ctx.lineTo(x, y);
+  }
+
+  ctx.lineTo(w, h);
+  ctx.closePath();
+  ctx.fill();
+
+  waveOffset += 0.02;
+}
+
+// ===== CIELO =====
+function drawSky() {
+  const sky = ctx.createLinearGradient(0,0,0,h);
+
+  sky.addColorStop(0,"#07111f");
+  sky.addColorStop(1,"#1c3245");
+
+  ctx.fillStyle = sky;
+  ctx.fillRect(0,0,w,h);
+}
+
+// ===== LLUVIA =====
+function drawRain() {
+  for(let drop of rain){
+
+    ctx.beginPath();
+    ctx.strokeStyle = `rgba(180,220,255,${drop.opacity})`;
+    ctx.lineWidth = 1;
+
+    ctx.moveTo(drop.x, drop.y);
+    ctx.lineTo(drop.x - 3, drop.y + drop.len);
+
+    ctx.stroke();
+
+    drop.y += drop.speed;
+    drop.x -= 1;
+
+    if(drop.y > h){
+      drop.y = -20;
+      drop.x = Math.random() * w;
+    }
+  }
+}
+
+// ===== BRILLO AGUA =====
+function drawReflection() {
+  ctx.fillStyle = "rgba(255,255,255,0.03)";
+
+  for(let i = 0; i < 120; i++){
+
+    const x = Math.random() * w;
+    const y = h * 0.65 + Math.random() * 120;
+
+    ctx.fillRect(x, y, Math.random() * 40, 1);
+  }
+}
+
+// ===== RELÁMPAGOS =====
+let lightningTimer = 0;
+
+function drawLightning() {
+
+  lightningTimer++;
+
+  if(lightningTimer > 250 && Math.random() > 0.97){
+
+    ctx.fillStyle = "rgba(255,255,255,0.15)";
+    ctx.fillRect(0,0,w,h);
+
+    ctx.beginPath();
+    ctx.strokeStyle = "rgba(255,255,255,0.9)";
+    ctx.lineWidth = 2;
+
+    let x = Math.random() * w;
+    let y = 0;
+
+    ctx.moveTo(x,y);
+
+    for(let i = 0; i < 20; i++){
+      x += (Math.random() - 0.5) * 40;
+      y += Math.random() * 35;
+      
+
+      ctx.lineTo(x,y);
+    }
+
+    ctx.stroke();
+
+    lightningTimer = 0;
+  }
+}
+
+// ===== ANIMACIÓN =====
+function animate(){
+
+  drawSky();
+  drawOcean();
+  drawReflection();
+  drawRain();
+  drawLightning();
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>
+   
