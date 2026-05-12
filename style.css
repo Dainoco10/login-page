@@ -40,6 +40,60 @@ canvas {
     isolation: isolate;
 }
 
+/* Efecto “flotando”: levitación suave + sombra proyectada */
+.sing::after {
+    content: "";
+    position: absolute;
+    left: 10%;
+    right: 10%;
+    height: 28px;
+    bottom: -18px;
+    background: radial-gradient(closest-side, rgba(0, 242, 254, 0.22), rgba(0, 242, 254, 0) 70%);
+    filter: blur(10px);
+    opacity: 0.75;
+    transform: translateY(0);
+    z-index: -1;
+}
+
+@keyframes float-card {
+    0%,
+    100% {
+        transform: translate(-50%, -50%) translateY(0);
+        box-shadow:
+            0 24px 70px rgba(0, 0, 0, 0.55),
+            0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    }
+    50% {
+        transform: translate(-50%, -50%) translateY(-10px);
+        box-shadow:
+            0 34px 90px rgba(0, 0, 0, 0.6),
+            0 1px 0 rgba(255, 255, 255, 0.06) inset;
+    }
+}
+
+@keyframes float-shadow {
+    0%,
+    100% {
+        opacity: 0.65;
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        opacity: 0.9;
+        transform: translateY(0) scale(0.92);
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .sing {
+        animation: float-card 6.5s ease-in-out infinite;
+        will-change: transform;
+    }
+    .sing::after {
+        animation: float-shadow 6.5s ease-in-out infinite;
+        will-change: transform, opacity;
+    }
+}
+
 h1 {
     margin-bottom: 18px;
     font-size: 28px;
